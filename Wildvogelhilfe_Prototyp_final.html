@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Wildvogelhilfe – Melde- und Einsatzkoordination</title>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #e4e4e4;
+      color: #222;
+    }
+    #frame {
+      width: 390px;
+      max-width: 100%;
+      height: 844px;
+      max-height: 92vh;
+      border: 2px solid #333;
+      border-radius: 6px;
+      overflow-y: auto;
+      background: #fff;
+    }
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #222;
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      padding: 10px 16px;
+    }
+    .userbar {
+      background: #eef4f7;
+      border-bottom: 1px solid #cfd9df;
+      padding: 10px 16px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .userbar button { width: auto; font-size: 12px; min-height: 34px; padding: 4px 8px; margin: 0; }
+    main { padding: 16px; }
+    .seite { display: none; }
+    .seite.aktiv { display: block; }
+    h1 { font-size: 24px; margin: 4px 0 8px; line-height: 1.2; }
+    h2 { font-size: 17px; margin: 18px 0 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+    p { margin: 8px 0; line-height: 1.45; }
+    small, .hint { font-size: 13px; color: #666; line-height: 1.4; }
+    label, legend { display: block; font-size: 14px; font-weight: bold; margin: 12px 0 4px; }
+    legend { padding: 0; }
+    input[type="text"], input[type="tel"], textarea {
+      width: 100%; min-height: 44px; padding: 9px;
+      font: inherit; background: #fff; border: 1px solid #777; border-radius: 0;
+    }
+    input:disabled { background: #eee; }
+    textarea { min-height: 76px; resize: vertical; }
+    fieldset { padding: 0; border: 0; margin: 10px 0 12px; min-width: 0; }
+    .rb { display: flex; align-items: center; gap: 10px; font-weight: normal; font-size: 15px; min-height: 44px; margin: 0; }
+    .rb input { width: 22px; height: 22px; flex: none; margin: 0; }
+    .checkboxtext { align-items: flex-start; margin-top: 18px; }
+    .checkboxtext input { margin-top: 2px; }
+    .ph {
+      height: 70px; margin: 10px 0;
+      background: #d8d8d8; color: #666;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    button {
+      display: block; width: 100%; min-height: 46px;
+      margin: 8px 0; padding: 8px; border: 2px solid #222;
+      font: inherit; font-size: 16px; background: #fff; color: #222; cursor: pointer;
+    }
+    button.p { background: #222; color: #fff; }
+    button.t { border: 0; text-decoration: underline; min-height: 40px; font-size: 14px; color: #666; }
+    button:disabled { color: #999; border-color: #bbb; background: #ddd; cursor: not-allowed; }
+    .box { border: 1px solid #777; padding: 10px; margin: 10px 0; font-size: 15px; line-height: 1.45; }
+    .card { border: 2px solid #444; padding: 12px; margin: 10px 0; font-size: 15px; line-height: 1.5; }
+    button.card { font-size: 15px; text-align: left; padding: 12px; }
+    .case-card { position: relative; border: 2px solid #444; padding: 12px; margin: 10px 0; font-size: 15px; line-height: 1.5; }
+    .case-card .case-open { border: 0; padding: 0; margin: 0; min-height: 0; width: 100%; text-align: left; font-size: 15px; line-height: 1.5; }
+    .case-actions { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 8px; }
+    .case-actions button.bell { width: auto; min-height: 42px; margin: 0; padding: 6px 10px; font-size: 14px; display: flex; align-items: center; gap: 7px; border: 1px solid #777; }
+    .case-actions button.bell[aria-pressed="true"] { background: #222; color: #fff; }
+    .case-actions svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .card.passive { border-color: #bbb; color: #666; background: #f7f7f7; }
+    .msg { background: #eee; border: 1px solid #777; padding: 10px; margin: 10px 0; font-size: 14px; line-height: 1.45; }
+    .warn { background: #eee; border-left: 4px solid #222; padding: 9px 10px; margin: 12px 0; font-size: 13px; line-height: 1.45; }
+    .kv { display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #eee; padding: 7px 0; font-size: 14px; }
+    .kv b { flex: 1; }
+    .kv span { flex: 1; text-align: right; overflow-wrap: anywhere; }
+    .state-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid #eee; padding: 7px 0; font-size: 14px; }
+    .state-badge { display: inline-block; min-width: 110px; max-width: 65%; text-align: center; border-radius: 12px; padding: 5px 8px; font-size: 12px; }
+    .state-search { background: #ddd; border: 2px solid #222; font-weight: bold; }
+    .state-pledged { background: #eee; border: 2px solid #444; font-weight: bold; }
+    .state-found { background: #f2f2f2; border: 1px solid #ccc; color: #666; }
+    .comment { background: #f7f7f7; border: 1px solid #bbb; padding: 10px; margin: 8px 0; font-size: 14px; overflow-wrap: anywhere; }
+    .comment small { display: block; margin-bottom: 4px; }
+    details { border: 1px solid #999; padding: 10px; margin: 10px 0; }
+    summary { min-height: 30px; cursor: pointer; font-size: 14px; font-weight: bold; }
+    .editor { border: 1px solid #bbb; padding: 10px; margin: 9px 0; }
+    .editor h2 { margin-top: 0; }
+    .editor button { min-height: 36px; font-size: 14px; }
+    .actions { margin-top: 16px; }
+    footer { border-top: 1px solid #ddd; padding: 10px 16px 16px; color: #777; font-size: 12px; line-height: 1.45; }
+    footer button { width: auto; border: 0; margin: 4px 0 0; text-decoration: underline; min-height: 32px; background: none; font-size: 12px; color: #666; padding: 0; }
+    [hidden] { display: none !important; }
+    input:focus-visible, textarea:focus-visible, button:focus-visible, summary:focus-visible { outline: 3px solid #777; outline-offset: 2px; }
+    @media (max-width: 480px) {
+      body { padding: 0; }
+      #frame { width: 100%; height: 100dvh; max-height: none; border: 0; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+<div id="frame">
+  <div id="bereich" class="top">Öffentlich</div>
+  <div id="userbar" class="userbar" hidden>
+    <span>Angemeldet als <b>Lisa Müller</b></span>
+    <button type="button" onclick="zeige('start')">Startseite</button>
+  </div>
+  <main>
+
+    <!-- 1 / 12: Startseite (V1 W01) -->
+    <section id="start" class="seite aktiv">
+      <h1>Wildvogel gefunden?</h1>
+      <p>Melden Sie einen hilfsbedürftigen Wildvogel ohne Registrierung.</p>
+      <p>Als Kontaktangabe wird nur eine Telefonnummer benötigt.</p>
+      <div class="ph">Foto</div>
+      <button type="button" class="p" onclick="zeige('vogel')">Fund melden</button>
+      <button type="button" onclick="starteHelfer()">Zum Koordinationsbereich</button>
+      <p class="hint">Der Koordinationsbereich ist für registrierte Mitglieder vorgesehen.</p>
+    </section>
+
+    <section id="vogel" class="seite">
+      <h1>Fund melden</h1>
+      <small>Schritt 1 von 3</small>
+      <form id="formVogel">
+        <h2>Vogel</h2>
+        <label for="art">Welche Vogelart ist es? *</label>
+        <input id="art" type="text" required placeholder="z. B. Amsel, Taube">
+        <label class="rb"><input id="artUnbekannt" type="checkbox" onchange="unbekanntPruefen()">Art unbekannt</label>
+
+        <label for="zustand">In welchem Zustand ist der Vogel? *</label>
+        <input id="zustand" type="text" required placeholder="z. B. flugunfähig, verletzt">
+        <label class="rb"><input id="zustandUnbekannt" type="checkbox" onchange="unbekanntPruefen()">Unbekannt / unsicher</label>
+        <p class="hint">Beispiel: verletzt, flugunfähig, Jungvogel oder geschwächt.</p>
+
+        <label>Foto · optional</label>
+        <div class="ph">Foto</div>
+        <div class="actions">
+          <button type="button" class="p" onclick="weiterVonVogel()">Weiter</button>
+          <button type="button" onclick="zeige('start')">Zurück</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="ort" class="seite">
+      <h1>Fund melden</h1>
+      <small>Schritt 2 von 3</small>
+      <form id="formOrt">
+        <h2>Fundort</h2>
+        <p class="hint">Geben Sie die Adresse an, soweit bekannt. Falls PLZ oder Ort nicht angegeben werden können, beschreiben Sie den Fundort bitte im Freitextfeld.</p>
+        <label for="fundPlz">Postleitzahl</label>
+        <input id="fundPlz" type="text" inputmode="numeric" placeholder="z. B. 97070" maxlength="5">
+        <label for="fundStadt">Ort</label>
+        <input id="fundStadt" type="text" placeholder="z. B. Würzburg">
+        <label for="fundStrasse">Straße · falls bekannt</label>
+        <input id="fundStrasse" type="text" placeholder="z. B. Mainstraße">
+        <label for="fundHaus">Hausnummer · falls bekannt</label>
+        <input id="fundHaus" type="text" placeholder="z. B. 12a">
+        <label for="fundBeschreibung">Bitte beschreiben Sie den Fundort so genau wie möglich</label>
+        <textarea id="fundBeschreibung" placeholder="z. B. im Park hinter der großen Brücke, direkt neben der Sitzbank"></textarea>
+
+        <fieldset>
+          <legend>Ist der Vogel bereits gesichert? *</legend>
+          <label class="rb"><input type="radio" name="gesichert" value="ja" required>Ja</label>
+          <label class="rb"><input type="radio" name="gesichert" value="nein">Nein</label>
+        </fieldset>
+        <p class="hint">Gesichert bedeutet, dass der Vogel eingefangen und z. B. in einer Box oder an einem geschützten Ort untergebracht wurde.</p>
+
+        <fieldset>
+          <legend>Befindet sich der Vogel noch am Fundort? *</legend>
+          <label class="rb"><input type="radio" name="amFundort" value="ja" required onchange="ortPruefen()">Ja</label>
+          <label class="rb"><input type="radio" name="amFundort" value="nein" onchange="ortPruefen()">Nein</label>
+        </fieldset>
+        <div id="andererOrtFeld" hidden>
+          <h2>Aktueller Aufenthalts- / Abholort</h2>
+          <p class="hint">Wo befindet sich der Vogel jetzt? Tragen Sie die Adresse ein, soweit bekannt, oder beschreiben Sie den Ort möglichst genau.</p>
+          <label for="aktuellPlz">Postleitzahl</label>
+          <input id="aktuellPlz" type="text" inputmode="numeric" placeholder="z. B. 97070" maxlength="5">
+          <label for="aktuellStadt">Ort</label>
+          <input id="aktuellStadt" type="text" placeholder="z. B. Würzburg">
+          <label for="aktuellStrasse">Straße · falls bekannt</label>
+          <input id="aktuellStrasse" type="text" placeholder="z. B. Mainstraße">
+          <label for="aktuellHaus">Hausnummer · falls bekannt</label>
+          <input id="aktuellHaus" type="text" placeholder="z. B. 12a">
+          <label for="aktuellBeschreibung">Bitte beschreiben Sie den aktuellen Aufenthaltsort so genau wie möglich</label>
+          <textarea id="aktuellBeschreibung" placeholder="z. B. in einer Transportbox am Eingang des Gebäudes"></textarea>
+        </div>
+
+        <h2>Transport</h2>
+        <fieldset>
+          <legend>Können Sie den Vogel selbst zu einer Pflegestelle fahren? *</legend>
+          <label class="rb"><input type="radio" name="transport" value="ja" required>Ja</label>
+          <label class="rb"><input type="radio" name="transport" value="nein">Nein</label>
+        </fieldset>
+        <p class="hint">Eine Pflegestelle ist eine Person oder Stelle, die den Vogel zur weiteren Versorgung übernimmt.</p>
+        <div class="actions">
+          <button type="button" class="p" onclick="weiterVonOrt()">Weiter</button>
+          <button type="button" onclick="zeige('vogel')">Zurück</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="kontakt" class="seite">
+      <h1>Fund melden</h1>
+      <small>Schritt 3 von 3</small>
+      <form id="formKontakt">
+        <h2>Kontakt</h2>
+        <label for="telefon">Telefonnummer der Finder:in *</label>
+        <input id="telefon" type="tel" required placeholder="z. B. 0172 12345678">
+
+        <label for="name">Name · optional</label>
+        <input id="name" type="text" placeholder="Name der Finder:in">
+
+        <label for="hinweise">Zusätzliche Hinweise · optional</label>
+        <textarea id="hinweise" placeholder="Möchten Sie noch etwas mitteilen?"></textarea>
+        <label class="rb checkboxtext">
+          <input id="kontaktOK" type="checkbox" required>
+          Ich bestätige die vorgesehene Verwendung der angegebenen Telefonnummer für Rückfragen und Benachrichtigungen. *
+        </label>
+        <div class="actions">
+          <button type="button" class="p" onclick="zurPruefseite()">Angaben prüfen</button>
+          <button type="button" onclick="zeige('ort')">Zurück</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="pruefen" class="seite">
+      <h1>Angaben prüfen</h1>
+      <p>Bitte überprüfen Sie Ihre Angaben vor dem Absenden.</p>
+
+      <div class="editor">
+        <h2>Vogel</h2>
+        <div class="kv"><b>Art</b><span data-pruef="art"></span></div>
+        <div class="kv"><b>Zustand</b><span data-pruef="zustand"></span></div>
+        <div class="kv"><b>Foto</b><span>Kein Foto</span></div>
+        <button type="button" onclick="zeige('vogel')">Vogelangaben bearbeiten</button>
+      </div>
+
+      <div class="editor">
+        <h2>Fundort</h2>
+        <div class="kv"><b>Fundort</b><span data-pruef="fundort"></span></div>
+        <div class="kv"><b>Abholort</b><span data-pruef="abholort"></span></div>
+        <button type="button" onclick="zeige('ort')">Fundort bearbeiten</button>
+      </div>
+
+      <div class="editor">
+        <h2>Aktuelle Situation</h2>
+        <div class="kv"><b>Gesichert</b><span data-pruef="gesichert"></span></div>
+        <div class="kv"><b>Transport möglich</b><span data-pruef="transport"></span></div>
+        <button type="button" onclick="zeige('ort')">Situation bearbeiten</button>
+      </div>
+
+      <div class="editor">
+        <h2>Kontakt</h2>
+        <div class="kv"><b>Name</b><span data-pruef="name"></span></div>
+        <div class="kv"><b>Telefon</b><span data-pruef="telefon"></span></div>
+        <div class="kv"><b>Hinweise</b><span data-pruef="hinweise"></span></div>
+        <button type="button" onclick="zeige('kontakt')">Kontakt bearbeiten</button>
+      </div>
+
+      <button type="button" class="p" onclick="meldungAbsenden()">Meldung absenden</button>
+      <button type="button" onclick="zeige('kontakt')">Zurück</button>
+    </section>
+
+    <!-- 6 / 12: Meldebestätigung (V1 W06) -->
+    <section id="meldungErfolg" class="seite">
+      <h1>Meldung eingegangen</h1>
+      <div class="box"><b>Fallnummer: #2026-0178</b></div>
+      <p>Ihre Meldung wurde übermittelt.</p>
+      <p>Bitte bleiben Sie für Rückfragen per Telefon oder SMS erreichbar.</p>
+      <h2>Anfänglicher Hilfsbedarf</h2>
+      <div class="state-row"><b>Sicherung</b><span class="state-badge" data-wert="sicherung">gesucht</span></div>
+      <div class="state-row"><b>Transport</b><span class="state-badge" data-wert="transport">gesucht</span></div>
+      <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+      <button type="button" class="p" onclick="zeige('start')">Zur Startseite</button>
+      <button type="button" onclick="starteHelfer()">Zum Koordinationsbereich</button>
+    </section>
+
+    <section id="faelle" class="seite">
+      <h1>Fallübersicht</h1>
+      <small>Aktuelle Koordinationsfälle</small>
+      <div class="case-card">
+        <button class="case-open" type="button" onclick="fallAnsehen()" aria-label="Fall 2026-0178 öffnen">
+          <b>Fall #2026-0178</b><br>
+          <span data-wert="art">Amsel</span><br>
+          <span data-wert="region">97076 Würzburg</span><br>
+          <small>Zum Falldetail öffnen</small>
+          <div class="state-row"><b>Sicherung</b><span class="state-badge" data-wert="sicherung">gesucht</span></div>
+          <div class="state-row"><b>Transport</b><span class="state-badge" data-wert="transport">gesucht</span></div>
+          <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+        </button>
+        <div class="case-actions">
+          <button id="fallGlocke" class="bell" type="button" aria-pressed="false" aria-label="Benachrichtigungen für Fall 2026-0178 abonnieren" onclick="benachrichtigungUmschalten()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+            <span id="glockenText">Abonnieren</span>
+          </button>
+        </div>
+        <p id="glockenHinweis" class="hint" role="status" hidden></p>
+      </div>
+      <div class="card passive">
+        <b>Fall #2026-0176</b><br>Mauersegler<br>97070 Würzburg<br>
+        <div class="state-row"><b>Sicherung</b><span class="state-badge state-search">gesucht</span></div>
+        <div class="state-row"><b>Transport</b><span class="state-badge state-found">bereits gefunden</span></div>
+        <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+      </div>
+      <div class="card passive">
+        <b>Fall #2026-0169</b><br>Turmfalke<br>97318 Kitzingen<br>
+        <div class="state-row"><b>Sicherung</b><span class="state-badge state-found">bereits gefunden</span></div>
+        <div class="state-row"><b>Transport</b><span class="state-badge state-search">gesucht</span></div>
+        <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-found">bereits gefunden</span></div>
+      </div>
+      <button type="button" class="t" onclick="zeige('start')">Zur Startseite</button>
+    </section>
+
+    <section id="fallDetail" class="seite">
+      <h1>Fall #2026-0178</h1>
+      <div class="kv"><b>Fallstatus</b><span>in Bearbeitung</span></div>
+      <h2>Fallinformationen</h2>
+      <div class="box">
+        <b data-wert="art">Amsel</b><br>
+        Zustand: <span data-wert="zustand"></span><br>
+        Ort: <span data-wert="region"></span>
+      </div>
+      <p class="hint" data-wert="hinweise"></p>
+      <h2>Aktueller Status</h2>
+      <div class="state-row"><b>Sicherung</b><span class="state-badge" data-wert="sicherung">gesucht</span></div>
+      <div class="state-row"><b>Transport</b><span class="state-badge" data-wert="transport">gesucht</span></div>
+      <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+      <button id="zusageStart" type="button" class="p" onclick="zeige('zusagePruefen')">Sicherung übernehmen</button>
+      <button type="button" class="p">Transport übernehmen</button>
+      <button type="button" class="p">Pflegestelle zusagen</button>
+      <button type="button" onclick="telefonUmschalten(this)">Telefonnummer anzeigen</button>
+      <div class="box telefonBox" hidden>
+        <b>Kontakt zur Finder:in</b><br>
+        <span data-wert="name"></span><br>
+        <span data-wert="telefon"></span>
+      </div>
+      <h2>Kommentare</h2>
+      <div class="kommentarliste"></div>
+      <details>
+        <summary>Kommentar hinterlassen</summary>
+        <label for="kommentar1">Liegen Ihnen neue Informationen vor?</label>
+        <textarea id="kommentar1" placeholder="Information zum Fall"></textarea>
+        <p class="hint">Bitte keine privaten Adress- oder Kontaktdaten eintragen.</p>
+        <button type="button" onclick="kommentarSpeichern('kommentar1')">Kommentar hinzufügen</button>
+      </details>
+      <button type="button" class="t" onclick="zeige('faelle')">Zur Fallübersicht</button>
+    </section>
+
+    <section id="zusagePruefen" class="seite">
+      <h1>Sicherung übernehmen</h1>
+      <p>Sind Sie sicher, dass Sie die Sicherung übernehmen möchten?</p>
+      <div class="box">
+        <div class="kv"><b>Fall</b><span>#2026-0178</span></div>
+        <div class="kv"><b>Vogel</b><span data-wert="art"></span></div>
+        <div class="kv"><b>Ort</b><span data-wert="region"></span></div>
+        <div class="kv"><b>Sicherung</b><span>gesucht</span></div>
+      </div>
+      <button type="button" class="p" onclick="zusageBestaetigen()">Sicherung übernehmen</button>
+      <button type="button" onclick="zeige('fallDetail')">Abbrechen</button>
+    </section>
+
+
+    <section id="sicherungBearbeiten" class="seite">
+      <h1>Sicherung bearbeiten</h1>
+      <div class="kv"><b>Fall</b><span>#2026-0178</span></div>
+      <div class="kv"><b>Status</b><span>Sicherung zugesagt von Lisa Müller</span></div>
+      <h2>Abholung und Kontakt</h2>
+      <div class="box"><b>Genauer Ort:</b><br><span data-wert="abholort"></span></div>
+      <button type="button" onclick="telefonUmschalten(this)">Telefonnummer anzeigen</button>
+      <div class="box telefonBox" hidden>
+        <b>Kontakt zur Finder:in</b><br><span data-wert="name"></span><br><span data-wert="telefon"></span>
+      </div>
+      <h2>Aktueller Status</h2>
+      <div class="state-row"><b>Sicherung</b><span class="state-badge" data-wert="sicherung">zugesagt</span></div>
+      <div class="state-row"><b>Transport</b><span class="state-badge" data-wert="transport">gesucht</span></div>
+      <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+      <button type="button" class="p" onclick="zeige('sicherungPruefen')">Vogel gesichert?</button>
+      <button type="button" class="p">Transport übernehmen</button>
+      <button type="button" class="p">Pflegestelle zusagen</button>
+      <h2>Kommentare</h2>
+      <div class="kommentarliste"></div>
+      <details>
+        <summary>Kommentar hinterlassen</summary>
+        <label for="kommentar2">Liegen Ihnen neue Informationen vor?</label>
+        <textarea id="kommentar2" placeholder="Information zum Fall"></textarea>
+        <p class="hint">Bitte keine privaten Adress- oder Kontaktdaten eintragen.</p>
+        <button type="button" onclick="kommentarSpeichern('kommentar2')">Kommentar hinzufügen</button>
+      </details>
+      <button type="button" class="t" onclick="zeige('faelle')">Zur Fallübersicht</button>
+    </section>
+
+    <!-- 11 / 12: Durchführung der Sicherung gesondert bestätigen -->
+    <section id="sicherungPruefen" class="seite">
+      <h1>Vogel gesichert?</h1>
+      <p>Bitte bestätigen Sie, dass der Vogel bereits gesichert wurde.</p>
+      <div class="box">
+        <div class="kv"><b>Fall</b><span>#2026-0178</span></div>
+        <div class="kv"><b>Bestätigung durch</b><span>Lisa Müller</span></div>
+        <div class="kv"><b>Aktueller Stand</b><span>Sicherung zugesagt</span></div>
+      </div>
+      <button type="button" class="p" onclick="sicherungBestaetigen()">Ich bestätige, dass der Vogel bereits gesichert wurde.</button>
+      <button type="button" onclick="zeige('sicherungBearbeiten')">Abbrechen</button>
+    </section>
+
+    <section id="fallGesichert" class="seite">
+      <h1>Fall #2026-0178</h1>
+      <div class="kv"><b>Fallstatus</b><span>in Bearbeitung</span></div>
+      <h2>Fallinformationen</h2>
+      <div class="box"><b data-wert="art">Amsel</b><br>Zustand: <span data-wert="zustand"></span><br>Abholbereich: <span data-wert="region"></span></div>
+      <h2>Aktueller Status</h2>
+      <div class="state-row"><b>Sicherung</b><span class="state-badge" data-wert="sicherung">Vogel gesichert</span></div>
+      <div class="state-row"><b>Transport</b><span class="state-badge" data-wert="transport">gesucht</span></div>
+      <div class="state-row"><b>Pflegestelle</b><span class="state-badge state-search">gesucht</span></div>
+      <div class="msg"><b>Sicherung bestätigt</b><br>durch Lisa Müller · <span data-wert="zeit"></span><br>Die weitere Koordination läuft. Transport und Pflegestelle können weiterhin benötigt werden.</div>
+      <button type="button" class="p">Transport übernehmen</button>
+      <button type="button" class="p">Pflegestelle zusagen</button>
+      <h2>Kommentare</h2>
+      <div class="kommentarliste"></div>
+      <details>
+        <summary>Kommentar ergänzen</summary>
+        <label for="kommentar3">Neue Information zum Fall</label>
+        <textarea id="kommentar3" placeholder="Information zum Fall"></textarea>
+        <p class="hint">Bitte keine privaten Adress- oder Kontaktdaten eintragen.</p>
+        <button type="button" onclick="kommentarSpeichern('kommentar3')">Kommentar hinzufügen</button>
+      </details>
+      <button type="button" class="p" onclick="zeige('faelle')">Zur Fallübersicht</button>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  /* ============================================================
+     1. Beispieldaten
+     ============================================================ */
+  const beispielFall = {
+    art: "Amsel", zustand: "Flugunfähig; Ursache unklar",
+    fundDaten: {plz: "97076", ort: "Würzburg", strasse: "Musterstraße", hausnummer: "12", beschreibung: "Vogel sitzt am Wegrand."},
+    abholDaten: {plz: "97076", ort: "Würzburg", strasse: "Musterstraße", hausnummer: "12", beschreibung: "Vogel sitzt am Wegrand."},
+    amFundort: true,
+    fundort: "Musterstraße 12 · 97076 Würzburg · Vogel sitzt am Wegrand.",
+    abholort: "Musterstraße 12 · 97076 Würzburg · Vogel sitzt am Wegrand.",
+    gesichert: false, transportSelbst: false,
+    telefon: "0000 000 000", name: "Anna Beispiel",
+    hinweise: "Vogel sitzt am Wegrand.",
+    zugesagt: false, sicherungBestaetigt: false,
+    zeit: "", kommentare: []
+  };
+
+  // Eine einfache Variable enthält den aktuell dargestellten Fall.
+  let fall = { ...beispielFall, kommentare: [] };
+
+  /* ============================================================
+     2. Screens wechseln und Formulare prüfen
+     ============================================================ */
+  function zeige(screen) {
+    document.querySelectorAll(".seite").forEach(function(seite) {
+      seite.classList.remove("aktiv");
+    });
+    document.getElementById(screen).classList.add("aktiv");
+    document.getElementById("frame").scrollTop = 0;
+
+    const oeffentlich = ["start", "vogel", "ort", "kontakt", "pruefen", "meldungErfolg"].includes(screen);
+    document.getElementById("bereich").textContent = oeffentlich ? "Öffentlich" : "Koordinationsbereich";
+    document.getElementById("userbar").hidden = oeffentlich;
+    alleAnsichtenAktualisieren();
+  }
+
+  function radioWert(name) {
+    const eingabe = document.querySelector('input[name="' + name + '"]:checked');
+    return eingabe ? eingabe.value : "";
+  }
+
+  function unbekanntPruefen() {
+    for (const paar of [["art", "artUnbekannt"], ["zustand", "zustandUnbekannt"]]) {
+      const eingabe = document.getElementById(paar[0]);
+      const unbekannt = document.getElementById(paar[1]).checked;
+      eingabe.required = !unbekannt;
+      eingabe.disabled = unbekannt;
+      if (unbekannt) eingabe.value = "";
+    }
+  }
+
+  function ortPruefen() {
+    const abweichend = radioWert("amFundort") === "nein";
+    document.getElementById("andererOrtFeld").hidden = !abweichend;
+  }
+
+  function weiterVonVogel() {
+    if (!document.getElementById("formVogel").reportValidity()) return;
+    zeige("ort");
+  }
+  function weiterVonOrt() {
+    if (!document.getElementById("formOrt").reportValidity()) return;
+    if (!orteValidieren()) return;
+    zeige("kontakt");
+  }
+  function zurPruefseite() {
+    if (!document.getElementById("formKontakt").reportValidity()) return;
+    pruefansichtFuellen();
+    zeige("pruefen");
+  }
+
+  /* ============================================================
+     3. Meldung prüfen und absenden (nur im Browser)
+     ============================================================ */
+  function ortEingabe(prefix) {
+    return {
+      plz: document.getElementById(prefix + "Plz").value.trim(),
+      ort: document.getElementById(prefix + "Stadt").value.trim(),
+      strasse: document.getElementById(prefix + "Strasse").value.trim(),
+      hausnummer: document.getElementById(prefix + "Haus").value.trim(),
+      beschreibung: document.getElementById(prefix + "Beschreibung").value.trim()
+    };
+  }
+
+  function ortAnzeige(daten) {
+    const strasse = [daten.strasse, daten.hausnummer].filter(Boolean).join(" ");
+    const plzOrt = [daten.plz, daten.ort].filter(Boolean).join(" ");
+    return [strasse, plzOrt, daten.beschreibung].filter(Boolean).join(" · ") || "Keine Ortsangabe";
+  }
+
+  function ortValidieren(prefix, bezeichnung) {
+    const daten = ortEingabe(prefix);
+    if ((daten.plz && daten.ort) || daten.beschreibung) return true;
+    const feld = document.getElementById(prefix + "Beschreibung");
+    feld.setCustomValidity("Bitte geben Sie für " + bezeichnung + " PLZ und Ort oder eine genaue Beschreibung an.");
+    feld.reportValidity();
+    feld.setCustomValidity("");
+    return false;
+  }
+
+  function orteValidieren() {
+    if (!ortValidieren("fund", "den Fundort")) return false;
+    if (radioWert("amFundort") === "nein" && !ortValidieren("aktuell", "den aktuellen Aufenthaltsort")) return false;
+    return true;
+  }
+
+  function pruefwerte() {
+    const fundDaten = ortEingabe("fund");
+    const abholDaten = radioWert("amFundort") === "nein" ? ortEingabe("aktuell") : {...fundDaten};
+    return {
+      art: document.getElementById("artUnbekannt").checked ? "Art unbekannt" : document.getElementById("art").value.trim(),
+      zustand: document.getElementById("zustandUnbekannt").checked ? "Unbekannt / unsicher" : document.getElementById("zustand").value.trim(),
+      fundDaten: fundDaten,
+      abholDaten: abholDaten,
+      amFundort: radioWert("amFundort") === "ja",
+      fundort: ortAnzeige(fundDaten),
+      abholort: ortAnzeige(abholDaten),
+      gesichert: radioWert("gesichert") === "ja",
+      transportSelbst: radioWert("transport") === "ja",
+      telefon: document.getElementById("telefon").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      hinweise: document.getElementById("hinweise").value.trim()
+    };
+  }
+
+  function pruefansichtFuellen() {
+    const eingabe = pruefwerte();
+    const beschriftung = {
+      art: eingabe.art, zustand: eingabe.zustand,
+      fundort: eingabe.fundort, abholort: eingabe.abholort,
+      gesichert: eingabe.gesichert ? "Ja" : "Nein",
+      transport: eingabe.transportSelbst ? "Ja" : "Nein",
+      name: eingabe.name || "–", telefon: eingabe.telefon,
+      hinweise: eingabe.hinweise || "–"
+    };
+    document.querySelectorAll("[data-pruef]").forEach(function(element) {
+      element.textContent = beschriftung[element.dataset.pruef];
+    });
+  }
+
+  function meldungAbsenden() {
+    // Auch bei einem Rücksprung auf die Prüfseite erneut validieren.
+    if (!document.getElementById("formVogel").reportValidity()) { zeige("vogel"); return; }
+    if (!document.getElementById("formOrt").reportValidity()) { zeige("ort"); return; }
+    if (!orteValidieren()) { zeige("ort"); return; }
+    if (!document.getElementById("formKontakt").reportValidity()) { zeige("kontakt"); return; }
+
+    fall = { ...pruefwerte(), zugesagt: false, sicherungBestaetigt: false, zeit: "", kommentare: [] };
+    fallBenachrichtigungenAktiv = false;
+    document.getElementById("fallGlocke").setAttribute("aria-pressed", "false");
+    document.getElementById("glockenText").textContent = "Abonnieren";
+    document.getElementById("glockenHinweis").hidden = true;
+    zeige("meldungErfolg");
+  }
+
+  /* ============================================================
+     4. Statusanzeigen, Anmeldung als Testperson und Zusage
+     ============================================================ */
+  function sicherungsText() {
+    if (fall.sicherungBestaetigt) return "Vogel gesichert";
+    if (fall.gesichert) return "Vogel bereits gesichert";
+    if (fall.zugesagt) return "zugesagt von Lisa Müller";
+    return "gesucht";
+  }
+  function transportText() {
+    return fall.transportSelbst ? "Transport durch Finder:in möglich" : "gesucht";
+  }
+  function regionText() {
+    // Vorrang hat der aktuelle Aufenthaltsort; bei unverändertem Standort der Fundort.
+    const daten = fall.abholDaten || fall.fundDaten;
+    if (!daten) return fall.abholort || fall.fundort || "Ort nicht angegeben";
+    if (daten.plz && daten.ort) return daten.plz + " " + daten.ort;
+    return daten.beschreibung || "Ort nicht angegeben";
+  }
+
+  function alleAnsichtenAktualisieren() {
+    const werte = {
+      art: fall.art, zustand: fall.zustand, fundort: fall.fundort,
+      abholort: fall.abholort, region: regionText(),
+      sicherung: sicherungsText(), transport: transportText(),
+      telefon: fall.telefon, name: fall.name || "Name nicht angegeben",
+      hinweise: fall.hinweise || "Keine weiteren Hinweise.",
+      zeit: fall.zeit || "gerade eben"
+    };
+
+    document.querySelectorAll("[data-wert]").forEach(function(element) {
+      element.textContent = werte[element.dataset.wert];
+      if (element.classList.contains("state-badge")) {
+        const status = element.textContent;
+        element.classList.remove("state-search", "state-found", "state-pledged");
+        element.classList.add(status === "gesucht" ? "state-search" :
+          status.startsWith("zugesagt") ? "state-pledged" : "state-found");
+      }
+    });
+    document.getElementById("zusageStart").hidden = fall.gesichert || fall.zugesagt;
+    kommentareAnzeigen();
+  }
+
+  // Klickbarer Abonnement-Zustand im Low-Fidelity-Prototyp.
+  // Es werden weder Push-Nachrichten versendet noch Einstellungen an einen Server übertragen.
+  let fallBenachrichtigungenAktiv = false;
+  function benachrichtigungUmschalten() {
+    fallBenachrichtigungenAktiv = !fallBenachrichtigungenAktiv;
+    const button = document.getElementById("fallGlocke");
+    const text = document.getElementById("glockenText");
+    const hinweis = document.getElementById("glockenHinweis");
+    button.setAttribute("aria-pressed", String(fallBenachrichtigungenAktiv));
+    button.setAttribute("aria-label", fallBenachrichtigungenAktiv
+      ? "Benachrichtigungen für Fall 2026-0178 deaktivieren"
+      : "Benachrichtigungen für Fall 2026-0178 abonnieren");
+    text.textContent = fallBenachrichtigungenAktiv ? "Abonniert" : "Abonnieren";
+    hinweis.hidden = false;
+    hinweis.textContent = fallBenachrichtigungenAktiv
+      ? "Benachrichtigungen zu diesem Fall abonniert (Simulation im Prototyp)."
+      : "Benachrichtigungen zu diesem Fall deaktiviert.";
+  }
+
+  function starteHelfer() { zeige("faelle"); }
+
+  function fallAnsehen() {
+    if (fall.sicherungBestaetigt) zeige("fallGesichert");
+    else if (fall.zugesagt) zeige("sicherungBearbeiten");
+    else zeige("fallDetail");
+  }
+
+  function zusageBestaetigen() {
+    if (fall.gesichert || fall.zugesagt) return;
+    fall.zugesagt = true;
+    zeige("sicherungBearbeiten");
+  }
+
+  function sicherungBestaetigen() {
+    if (!fall.zugesagt || fall.sicherungBestaetigt) return;
+    fall.sicherungBestaetigt = true;
+    fall.zeit = new Date().toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" });
+    zeige("fallGesichert");
+  }
+
+  /* ============================================================
+     5. Telefonnummer und Kommentare im Falldetail
+     ============================================================ */
+  function telefonUmschalten(button) {
+    const box = button.nextElementSibling;
+    box.hidden = !box.hidden;
+    button.textContent = box.hidden ? "Telefonnummer anzeigen" : "Telefonnummer verbergen";
+  }
+
+  function kommentarSpeichern(textareaId) {
+    const feld = document.getElementById(textareaId);
+    const kommentar = feld.value.trim();
+    if (!kommentar) { feld.focus(); return; }
+    fall.kommentare.push({
+      text: kommentar,
+      zeit: new Date().toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })
+    });
+    feld.value = "";
+    kommentareAnzeigen();
+  }
+
+  function kommentareAnzeigen() {
+    document.querySelectorAll(".kommentarliste").forEach(function(liste) {
+      liste.replaceChildren();
+      if (fall.kommentare.length === 0) {
+        const info = document.createElement("p");
+        info.className = "hint";
+        info.textContent = "Noch keine Kommentare.";
+        liste.appendChild(info);
+      }
+      fall.kommentare.forEach(function(kommentar) {
+        const box = document.createElement("div");
+        box.className = "comment";
+        const info = document.createElement("small");
+        info.textContent = "Lisa Müller · " + kommentar.zeit;
+        const text = document.createElement("span");
+        text.textContent = kommentar.text;
+        box.append(info, text);
+        liste.appendChild(box);
+      });
+    });
+  }
+
+  // Der Beispiel-Fall wird beim ersten Öffnen angezeigt.
+  alleAnsichtenAktualisieren();
+</script>
+</body>
+</html>
